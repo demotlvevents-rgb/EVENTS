@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>לוח אירועים</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      direction: rtl;
+      text-align: right;
+      margin: 24px;
+      background: #fafafa;
+    }
+
+    h1 {
+      margin-bottom: 16px;
+    }
+
+    .controls {
+      background: white;
+      border: 1px solid #ddd;
+      border-radius: 12px;
+      padding: 16px;
+      margin-bottom: 20px;
+      max-width: 500px;
+    }
+
+    .controls label {
+      display: block;
+      margin-bottom: 10px;
+      cursor: pointer;
+      font-size: 16px;
+    }
+
+    .calendar-wrapper {
+      background: white;
+      border: 1px solid #ddd;
+      border-radius: 12px;
+      overflow: hidden;
+    }
+
+    iframe {
+      display: block;
+      width: 100%;
+      height: 900px;
+      border: 0;
+    }
+
+    .hint {
+      margin-top: 10px;
+      color: #666;
+      font-size: 14px;
+    }
+  </style>
+</head>
+<body>
+  <h1>לוח אירועים</h1>
+
+  <div class="controls">
+    <strong>יומנים:</strong>
+
+    <label>
+      <input type="checkbox" id="cal1" checked>
+      קהילת אזורי חן, למד וכוכב הצפון
+    </label>
+
+    <label>
+      <input type="checkbox" id="cal2" checked>
+      קהילת עבר הירקון
+    </label>
+
+    <div class="hint">אפשר לבחור יומן אחד או כמה יחד.</div>
+  </div>
+
+  <div class="calendar-wrapper">
+    <iframe id="calendarFrame"></iframe>
+  </div>
+
+  <script>
+    const calendar1 = "demotlvevents@gmail.com";
+    const calendar2 = "5507509eff13b79141601a3843dbfadab94423571c9f800c6a9ae425a47e9b88@group.calendar.google.com";
+
+    function buildCalendarUrl() {
+      const selected = [];
+
+      if (document.getElementById("cal1").checked) {
+        selected.push("src=" + encodeURIComponent(calendar1));
+      }
+
+      if (document.getElementById("cal2").checked) {
+        selected.push("src=" + encodeURIComponent(calendar2));
+      }
+
+      if (selected.length === 0) {
+        return "";
+      }
+
+      return (
+        "https://calendar.google.com/calendar/embed?" +
+        selected.join("&") +
+        "&ctz=Asia%2FJerusalem" +
+        "&mode=MONTH" +
+        "&showTitle=0" +
+        "&showNav=1" +
+        "&showTabs=0" +
+        "&showCalendars=0" +
+        "&showPrint=0" +
+        "&wkst=1"
+      );
+    }
+
+    function updateCalendar() {
+      const frame = document.getElementById("calendarFrame");
+      const url = buildCalendarUrl();
+
+      if (!url) {
+        frame.srcdoc = `
+          <div style="
+            font-family: Arial, sans-serif;
+            direction: rtl;
+            padding: 40px;
+            text-align: center;
+            color: #555;
+          ">
+            נא לבחור לפחות יומן אחד להצגה
+          </div>
+        `;
+        return;
+      }
+
+      frame.removeAttribute("srcdoc");
+      frame.src = url;
+    }
+
+    document.getElementById("cal1").addEventListener("change", updateCalendar);
+    document.getElementById("cal2").addEventListener("change", updateCalendar);
+
+    updateCalendar();
+  </script>
+</body>
+</html>
