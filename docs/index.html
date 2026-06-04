@@ -70,6 +70,11 @@
       קהילת עבר הירקון
     </label>
 
+    <label>
+      <input type="checkbox" id="cal2" checked>
+      מטה מחוז תל אביב
+    </label>
+
     <div class="hint">אפשר לבחור יומן אחד או כמה יחד.</div>
   </div>
 
@@ -80,7 +85,9 @@
   <script>
     const calendar1 = "demotlvevents@gmail.com";
     const calendar2 = "5507509eff13b79141601a3843dbfadab94423571c9f800c6a9ae425a47e9b88@group.calendar.google.com";
-
+    const calendar3 = "838e9ac0cc7224975243b51f10fc0aa60bdfef6a04438718fb8f8337c655040b@group.calendar.google.com";
+    
+    
     function buildCalendarUrl() {
       const selected = [];
 
@@ -90,6 +97,10 @@
 
       if (document.getElementById("cal2").checked) {
         selected.push("src=" + encodeURIComponent(calendar2));
+      }
+
+      if (document.getElementById("cal3").checked) {
+        selected.push("src=" + encodeURIComponent(calendar3));
       }
 
       if (selected.length === 0) {
