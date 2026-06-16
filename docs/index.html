@@ -4,6 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>לוח אירועים</title>
+
   <style>
     body {
       font-family: Arial, sans-serif;
@@ -13,31 +14,27 @@
       background: #fafafa;
     }
 
-    h1 {
-      margin-bottom: 16px;
-    }
-
     .controls {
       background: white;
       border: 1px solid #ddd;
       border-radius: 12px;
       padding: 16px;
       margin-bottom: 20px;
-      max-width: 500px;
     }
 
-    .controls label {
-      display: block;
-      margin-bottom: 10px;
+    .calendar-options {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px 24px;
+      margin-top: 12px;
+    }
+
+    label {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      white-space: nowrap;
       cursor: pointer;
-      font-size: 16px;
-    }
-
-    .calendar-wrapper {
-      background: white;
-      border: 1px solid #ddd;
-      border-radius: 12px;
-      overflow: hidden;
     }
 
     iframe {
@@ -47,34 +44,27 @@
       border: 0;
     }
 
+    .calendar-wrapper {
+      background: white;
+      border: 1px solid #ddd;
+      border-radius: 12px;
+      overflow: hidden;
+    }
+
     .hint {
-      margin-top: 10px;
+      margin-top: 12px;
       color: #666;
       font-size: 14px;
     }
   </style>
 </head>
+
 <body>
   <h1>לוח אירועים</h1>
 
   <div class="controls">
     <strong>יומנים:</strong>
-
-    <label>
-      <input type="checkbox" id="cal1" checked>
-      קהילת אזורי חן, למד וכוכב הצפון
-    </label>
-
-    <label>
-      <input type="checkbox" id="cal2" checked>
-      קהילת עבר הירקון
-    </label>
-
-    <label>
-      <input type="checkbox" id="cal3" checked>
-      מטה מחוז תל אביב
-    </label>
-
+    <div id="calendarOptions" class="calendar-options"></div>
     <div class="hint">אפשר לבחור יומן אחד או כמה יחד.</div>
   </div>
 
@@ -83,33 +73,70 @@
   </div>
 
   <script>
-    const calendar1 = "demotlvevents@gmail.com";
-    const calendar2 = "5507509eff13b79141601a3843dbfadab94423571c9f800c6a9ae425a47e9b88@group.calendar.google.com";
-    const calendar3 = "838e9ac0cc7224975243b51f10fc0aa60bdfef6a04438718fb8f8337c655040b@group.calendar.google.com";
-    
-    
+  
+    const COMMUNITY_COLOR = "#3F51B5";
+    const DISTRICT_COLOR = "#D32F2F";
+
+    let calendars = [
+      {
+        "name": "קהילת אזורי חן, למד וכוכב הצפון",
+        "id": "demotlvevents@gmail.com"
+      },
+      {
+        "name": "קהילת עבר הירקון",
+        "id": "5507509eff13b79141601a3843dbfadab94423571c9f800c6a9ae425a47e9b88@group.calendar.google.com"
+      },
+      {
+        "name": "מטה מחוז תל אביב",
+        "id": "838e9ac0cc7224975243b51f10fc0aa60bdfef6a04438718fb8f8337c655040b@group.calendar.google.com"
+      }
+    ];
+
+    function createCalendarSelectors() {
+      const container = document.getElementById("calendarOptions");
+      container.innerHTML = "";
+
+      calendars.forEach((calendar, index) => {
+        const label = document.createElement("label");
+
+        label.innerHTML = `
+          <input type="checkbox" id="calendar-${index}" checked />
+          ${calendar.name}
+        `;
+
+        container.appendChild(label);
+
+        document
+          .getElementById(`calendar-${index}`)
+          .addEventListener("change", updateCalendar);
+      });
+    }
+
     function buildCalendarUrl() {
-      const selected = [];
+      const params = [];
 
-      if (document.getElementById("cal1").checked) {
-        selected.push("src=" + encodeURIComponent(calendar1));
-      }
+      calendars.forEach((calendar, index) => {
+        if (!document.getElementById(`calendar-${index}`).checked) {
+          return;
+        }
 
-      if (document.getElementById("cal2").checked) {
-        selected.push("src=" + encodeURIComponent(calendar2));
-      }
+        params.push("src=" + encodeURIComponent(calendar.id));
 
-      if (document.getElementById("cal3").checked) {
-        selected.push("src=" + encodeURIComponent(calendar3));
-      }
+        const color =
+          calendar.name === "מטה מחוז תל אביב"
+            ? DISTRICT_COLOR
+            : COMMUNITY_COLOR;
 
-      if (selected.length === 0) {
+        params.push("color=" + encodeURIComponent(color));
+      });
+
+      if (params.length === 0) {
         return "";
       }
 
       return (
         "https://calendar.google.com/calendar/embed?" +
-        selected.join("&") +
+        params.join("&") +
         "&ctz=Asia%2FJerusalem" +
         "&mode=MONTH" +
         "&showTitle=0" +
@@ -144,11 +171,9 @@
       frame.src = url;
     }
 
-    document.getElementById("cal1").addEventListener("change", updateCalendar);
-    document.getElementById("cal2").addEventListener("change", updateCalendar);
-    document.getElementById("cal3").addEventListener("change", updateCalendar);
-    
-    updateCalendar();
+    loadCalendars();
   </script>
 </body>
 </html>
+
+
